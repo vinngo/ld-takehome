@@ -1,0 +1,30 @@
+{
+  "version": 1,
+  "skills": {
+    "create-skill": {
+      "source": "launchdarkly/agent-skills",
+      "sourceType": "github",
+      "computedHash": "5db1098060e6cd00d9586b0b53e714ed6bd640ae818b344b88928517f7f0ff8f"
+    },
+    "launchdarkly-flag-cleanup": {
+      "source": "launchdarkly/agent-skills",
+      "sourceType": "github",
+      "computedHash": "fa7deca0d1435e518ce5188101957e7df5b4577fc5c96dc82b4c682520c6fa0a"
+    },
+    "launchdarkly-flag-create": {
+      "source": "launchdarkly/agent-skills",
+      "sourceType": "github",
+      "computedHash": "0c992621283cb6374c2d19a276bd7b91612711623acdfa971a586e5f5ce4e2fb"
+    },
+    "launchdarkly-flag-discovery": {
+      "source": "launchdarkly/agent-skills",
+      "sourceType": "github",
+      "computedHash": "3819a67d28c8cb0b0ba34b198fa93d4f7fff2f611f09810480ff40adf08841ed"
+    },
+    "launchdarkly-flag-targeting": {
+      "source": "launchdarkly/agent-skills",
+      "sourceType": "github",
+      "computedHash": "0e8f761dec00618cc876c578619948c99547adee215eca72c401af7ea2fc5211"
+    }
+  }
+}
