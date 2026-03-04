@@ -5,6 +5,7 @@ import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { SAMPLE_MARKDOWN } from "@/lib/sampleMarkdown";
 import { HoverCaption } from "@/components/ui/fabula/hovercaption";
+import { useCompletion } from "@ai-sdk/react";
 
 type MarkdownEditorProps = {
   premiumEnabled: boolean;
@@ -16,9 +17,33 @@ export default function MarkdownEditor({
   summaryStyle,
 }: MarkdownEditorProps) {
   const [value, setValue] = useState(SAMPLE_MARKDOWN);
+  const [engagementScore, setEngagementScore] = useState<number | null>(null);
+  const [summaryError, setSummaryError] = useState<Error | null>(null);
   const [hoverPos, setHoverPos] = useState<{ x: number; y: number } | null>(
     null,
   );
+
+  const { completion, complete, isLoading } = useCompletion({
+    api: "/api/summarize",
+    streamProtocol: "text",
+    fetch: async (url, options) => {
+      const response = await fetch(url as string, options as RequestInit);
+      const score = response.headers.get("X-Engagement-Score");
+      if (score) setEngagementScore(Number(score));
+      setSummaryError(null);
+      return response;
+    },
+    onError: (err) => {
+      setSummaryError(err);
+    },
+  });
+
+  const handleSummarize = async () => {
+    setEngagementScore(null);
+    await complete(value, {
+      body: { summaryStyle },
+    });
+  };
 
   return (
     <div className="flex flex-col h-screen overflow-hidden">
@@ -148,12 +173,13 @@ export default function MarkdownEditor({
       <div className="flex items-center justify-center gap-3 p-3 border-t border-gray-200 bg-gray-50">
         <button
           type="button"
-          disabled={!premiumEnabled}
+          disabled={!premiumEnabled || isLoading}
           className={
-            premiumEnabled
+            premiumEnabled && !isLoading
               ? "rounded px-4 py-2 text-sm font-medium bg-indigo-600 text-white hover:bg-indigo-700"
               : "rounded px-4 py-2 text-sm font-medium bg-gray-300 text-gray-500 cursor-not-allowed"
           }
+          onClick={handleSummarize}
           onMouseEnter={
             !premiumEnabled
               ? (e) => setHoverPos({ x: e.clientX, y: e.clientY })
@@ -161,7 +187,7 @@ export default function MarkdownEditor({
           }
           onMouseLeave={!premiumEnabled ? () => setHoverPos(null) : undefined}
         >
-          Summarize
+          {isLoading ? "Summarizing..." : "Summarize"}
         </button>
         {hoverPos && (
           <HoverCaption
@@ -174,6 +200,35 @@ export default function MarkdownEditor({
           {summaryStyle} mode
         </span>
       </div>
+      {(completion || summaryError) && (
+        <div className="border-t border-gray-200 bg-white p-4 overflow-y-auto">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
+              AI Summary
+            </span>
+            <div className="flex items-center gap-2">
+              <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium bg-indigo-100 text-indigo-800">
+                {summaryStyle} variant
+              </span>
+              {engagementScore !== null && (
+                <span className="text-xs text-gray-500">
+                  Engagement:{" "}
+                  <span className="font-medium text-indigo-600">
+                    {engagementScore}/100
+                  </span>
+                </span>
+              )}
+            </div>
+          </div>
+          {summaryError ? (
+            <p className="text-sm text-red-600">{summaryError.message}</p>
+          ) : (
+            <p className="text-sm text-gray-800 whitespace-pre-wrap leading-relaxed">
+              {completion}
+            </p>
+          )}
+        </div>
+      )}
     </div>
   );
 }
