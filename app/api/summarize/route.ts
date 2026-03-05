@@ -10,6 +10,10 @@ const PROMPTS: Record<"short" | "detailed", string> = {
     "You are a thorough analyst. Summarize the following markdown content with a structured, comprehensive breakdown. Cover the main topics, key details, and conclusions. Use clear sections if the content warrants it.",
 };
 
+/*
+Next.js API route to summarize markdown content, stream results back to client, and send engagement score to LaunchDarkly
+*/
+
 export async function POST(req: Request) {
   const { prompt, summaryStyle } = (await req.json()) as {
     prompt: string;

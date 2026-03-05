@@ -3,6 +3,12 @@ import { getLdClient } from "@/lib/launchdarkly";
 import type { LDContext } from "@launchdarkly/node-server-sdk";
 import { cookies } from "next/headers";
 
+/*
+Server component to evaluate LaunchDarkly flags before first render.
+Evaluates flags from LaunchDarkly based on the sessionid and pass
+that to the MarkdownEditor.
+*/
+
 export default async function Home() {
   //read 'ld-session-id' cookie and fallback if not present
   const cookieStore = await cookies();

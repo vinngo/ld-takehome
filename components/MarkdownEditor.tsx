@@ -13,6 +13,10 @@ type MarkdownEditorProps = {
   summaryStyle: "short" | "detailed";
 };
 
+/*
+Client Component to render the markdown to HTML converter and summarizer given the evaluated flags.
+*/
+
 export default function MarkdownEditor({
   premiumEnabled,
   summaryStyle,
